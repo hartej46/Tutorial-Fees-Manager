@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "THis is backend made in node.js for student managment sysytem",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "backend",
+    "student",
+    "system",
+    "hartej"
+  ],
+  "author": "Hartejsingh Sandhu",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ioredis": "^5.11.1",
+    "mongodb": "^7.3.0",
+    "mongoose": "^9.7.0",
+    "nodemailer": "^8.0.11",
+    "redis": "^6.0.0",
+    "typescript": "^6.0.3"
+  }
+}
