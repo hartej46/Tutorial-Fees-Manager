@@ -1,6 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 
-const StandardSchema = new Schema(
+interface Standard {
+    grade: string;
+    year: string;
+    branch: Schema.Types.ObjectId;
+    totalFeeAmount: Number;
+    applicableMonths: String;
+}
+
+const StandardSchema = new Schema<Standard>(
     {
         grade: {
             type: String,

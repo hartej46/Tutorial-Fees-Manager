@@ -1,6 +1,11 @@
 import mongoose, { model, Schema } from "mongoose";
 
-const StudentSchema = new Schema(
+interface Student {
+    name: string;
+    parentsPhoneNumber: Number;
+}
+
+const StudentSchema = new Schema<Student>(
     {
         name: {
             type: String,

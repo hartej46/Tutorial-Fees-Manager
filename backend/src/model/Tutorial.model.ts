@@ -1,5 +1,10 @@
 import mongoose, {Schema} from "mongoose";
 
+interface Tutorial {
+    name: string;
+    owner: Schema.Types.ObjectId;
+}
+
 const TutorialSchema = new Schema(
     {
         name: {
