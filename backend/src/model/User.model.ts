@@ -16,7 +16,7 @@ interface IUserMethods {
 
 type UserDocument = Document & IUser & IUserMethods;
 
-const userSchema = new Schema<IUser, {}, {}, IUserMethods>({
+const userSchema = new Schema<IUser,IUserMethods>({
   name: {
     type: String,
     required: true,
@@ -65,4 +65,4 @@ userSchema.methods.generateRefreshToken = function (): string {
   );
 };
 
-export const User = model<IUser, {}, IUserMethods>('User', userSchema);
+export const User = model<IUser,IUserMethods>('User', userSchema);
