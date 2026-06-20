@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model,HydratedDocument,Model } from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
@@ -14,9 +14,9 @@ interface IUserMethods {
   generateRefreshToken(): string;
 }
 
-type UserDocument = Document & IUser & IUserMethods;
+type UserDocument = HydratedDocument<IUser, IUserMethods>;
 
-const userSchema = new Schema<IUser,IUserMethods>({
+const userSchema = new Schema<IUser, Model<IUser, object, IUserMethods>, IUserMethods>({
   name: {
     type: String,
     required: true,
@@ -35,13 +35,14 @@ const userSchema = new Schema<IUser,IUserMethods>({
   },
 });
 
-userSchema.pre<UserDocument>('save', async function (next) {
-  if (!this.isModified('password')) return ;
+userSchema.pre<UserDocument>('save', async function () {
+  if (!this.isModified('password')) return;
 
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-  } catch (error: any) {
+  } catch (error) {
+    throw error;
   }
 });
 
@@ -65,4 +66,4 @@ userSchema.methods.generateRefreshToken = function (): string {
   );
 };
 
-export const User = model<IUser,IUserMethods>('User', userSchema);
+export const User = model('User', userSchema);
