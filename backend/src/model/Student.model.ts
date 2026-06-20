@@ -1,11 +1,11 @@
-import mongoose, { model, Schema } from "mongoose";
+import mongoose, { Model, model, Schema } from "mongoose";
 
 interface Student {
     name: string;
     parentsPhoneNumber: Number;
 }
 
-const StudentSchema = new Schema<Student>(
+const StudentSchema = new Schema<Student, Model<Student, object>>(
     {
         name: {
             type: String,
