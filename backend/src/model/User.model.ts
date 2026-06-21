@@ -77,3 +77,4 @@ userSchema.methods.generateRefreshToken = function (): string {
 };
 
 export const User = model('User', userSchema);
+export type UserType = UserDocument;
