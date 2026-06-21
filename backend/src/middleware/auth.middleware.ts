@@ -1,19 +1,21 @@
 import { options } from "../constants.ts";
+import { createRefreshAccessToken } from "../controller/user.controller.ts";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { User } from '../model/User.model.ts'
 import { asyncHandler } from "../utils/asyncHandler.ts";
 import { Response, Request, NextFunction } from "express";
+import { UserType } from "../model/User.model.ts";
 
 interface TokenPayload extends JwtPayload {
   _id: string;
 }
 
 interface CustomRequest extends Request {
-  user?: any;
+  user?: UserType;
 }
 
 
-export const verifyToken = asyncHandler(async (req: CustomRequest, res: Response, next: NextFunction): Promise<any> => {
+export const verifyToken = asyncHandler(async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies?.accessToken;
         
@@ -40,7 +42,7 @@ export const verifyToken = asyncHandler(async (req: CustomRequest, res: Response
         const rToken = req.cookies?.refreshToken;
         if ((error.name === "TokenExpiredError" || error.message === "TokenExpired") && rToken) {
             try {
-                const decodeToken = jwt.verify(rToken, process.env.ACCESS_TOKEN_GENERATOR as string) as TokenPayload;
+                const decodeToken = jwt.verify(rToken, process.env.REFRESH_TOKEN_GENERATOR as string) as TokenPayload;
                 const user = await User.findById(decodeToken._id);
                 
                 if (!user) {
@@ -52,8 +54,8 @@ export const verifyToken = asyncHandler(async (req: CustomRequest, res: Response
                         });
                 }
                 
-                // const {accessToken, refreshToken} = await createRefreshAccessToken(user._id);
-                // res.cookie('accessToken', accessToken, options).cookie("refreshToken", refreshToken, options);
+                const {accessToken, refreshToken} = await createRefreshAccessToken(user._id);
+                res.cookie('accessToken', accessToken, options).cookie("refreshToken", refreshToken, options);
                 
                 req.user = user;
                 return next();
