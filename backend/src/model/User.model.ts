@@ -6,6 +6,7 @@ interface IUser {
   name: string;
   email: string;
   password: string;
+  refreshToken: string;
 }
 
 interface IUserMethods {
@@ -16,24 +17,33 @@ interface IUserMethods {
 
 type UserDocument = HydratedDocument<IUser, IUserMethods>;
 
-const userSchema = new Schema<IUser, Model<IUser, object, IUserMethods>, IUserMethods>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
+const userSchema = new Schema<IUser, Model<IUser, object, IUserMethods>, IUserMethods>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    refreshToken: {
+      type: String,
+      default: null
+    }
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    timestamps : true
+  }
+);
 
 userSchema.pre<UserDocument>('save', async function () {
   if (!this.isModified('password')) return;
