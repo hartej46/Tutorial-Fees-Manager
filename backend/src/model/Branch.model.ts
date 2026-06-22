@@ -1,14 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 
 interface Branch {
-    name: string;
+    branchName: string;
     tutorial: Schema.Types.ObjectId;
     address: string;
 }
 
 const BranchSchema = new Schema<Branch>(
     {
-        name: {
+        branchName: {
             type: String,
             required: true
         },
