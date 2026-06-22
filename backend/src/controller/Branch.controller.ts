@@ -15,19 +15,20 @@ interface CustomRequest extends Request {
 const createBranch = asyncHandler(async (req: CustomRequest, res: Response): Promise<Response> => {
     const { branchName, address, tutorialName } = req.body;
 
-    if (!branchName?.trim() || !address?.trim() || !tutorialName?.trim()) {
+    const trimmedBranchName = typeof branchName === 'string' ? branchName.trim() : '';
+    const trimmedAddress = typeof address === 'string' ? address.trim() : '';
+    const trimmedTutorialName = typeof tutorialName === 'string' ? tutorialName.trim() : '';
+
+    if (!trimmedBranchName || !trimmedAddress || !trimmedTutorialName) {
         return res.status(400).json({
             success: false,
             message: "Branch name, address, and tutorial name are required."
         });
     }
 
-    const trimmedBranchName = branchName.trim();
-    const trimmedAddress = address.trim();
-
     const tutorial = await Tutorial.findOne({
         owner: req.user?._id,
-        name: tutorialName
+        name: trimmedTutorialName
     });
     if (!tutorial) {
         return res.status(404).json({
@@ -48,21 +49,30 @@ const createBranch = asyncHandler(async (req: CustomRequest, res: Response): Pro
         });
     }
 
-    const newBranch = await Branch.create({
-        branchName: trimmedBranchName,
-        tutorial: tutorial._id,
-        address: trimmedAddress
-    });
-    if (!newBranch) {
+    try {
+        const newBranch = await Branch.create({
+            branchName: trimmedBranchName,
+            tutorial: tutorial._id,
+            address: trimmedAddress
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Branch structure instantiated successfully.",
+            data: newBranch
+        });
+    } catch (error: unknown) {
+        const err = error as { code?: number; name?: string };
+        if (err.code === 11000 || err.name === 'MongoServerError') {
+            return res.status(409).json({
+                success: false,
+                message: "A branch with this name already exists for this tutorial."
+            });
+        }
+
         return res.status(500).json({
             success: false,
             message: "An internal server error occurred while instantiating the branch metadata."
         });
     }
-
-    return res.status(201).json({
-        success: true,
-        message: "Branch structure instantiated successfully.",
-        data: newBranch
-    });
 });
