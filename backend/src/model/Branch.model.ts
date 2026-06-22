@@ -26,6 +26,9 @@ const BranchSchema = new Schema<Branch, Model<Branch, object>>(
     }
 )
 
-BranchSchema.index({ tutorial: 1, branchName: 1 }, { unique: true });
+BranchSchema.index(
+    { tutorial: 1, branchName: 1 },
+    { unique: true, collation: { locale: "en", strength: 2 } }
+);
 
 export const Branch = mongoose.model("Branch", BranchSchema)
