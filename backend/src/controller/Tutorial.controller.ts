@@ -52,3 +52,33 @@ const createTutorial = asyncHandler(async (req: CustomRequest, res: Response): P
     });
 });
 
+const getMyTutorialProfile = asyncHandler(async (req: CustomRequest, res: Response): Promise<Response> => {
+        if (!req.user || !req.user._id) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized request."
+        });
+    }
+
+    const tutorial = await Tutorial.findOne({ owner: req.user._id }).populate("owner", "-password -refreshToken");
+
+    if (!tutorial) {
+        return res.status(404).json({
+            success: false,
+            message: "No tutorial registration details found for this active user identity.",
+            hasSetupTutorial: false
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Tutorial configuration payload resolved successfully.",
+        data: tutorial,
+        hasSetupTutorial: true
+    });
+});
+
+export {
+    createTutorial,
+    getMyTutorialProfile
+};
