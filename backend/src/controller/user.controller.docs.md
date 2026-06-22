@@ -73,12 +73,13 @@ Registers a new user and sets cookies with newly generated tokens.
 - On success: `200` with
   - `{ success: true, message: "User created successfully" }`
 
-> Note: This handler currently does **not** set cookies in the response.
+> Note: `createUser` currently **does not** set cookies in the response.
 
 ---
 
 ### `login(req: Request, res: Response): Promise<Response>`
 Authenticates a user using email + password and sets JWT cookies.
+
 
 **Request body**
 - `email: string`
@@ -109,5 +110,6 @@ Cookies use `options` from `backend/src/constants.ts`.
 - `createRefreshAccessToken`
 - `login`
 
-> Note: `createUser` is currently **not exported** from this controller file.
+> Note: `createUser` is currently **not exported** from this controller file (it is defined but not included in `export { ... }`).
+
 
