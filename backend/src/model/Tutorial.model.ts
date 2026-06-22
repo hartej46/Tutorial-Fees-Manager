@@ -1,8 +1,9 @@
-import mongoose, {Model, Schema} from "mongoose";
+import mongoose, {Model, Schema, Types} from "mongoose";
+
 
 interface Tutorial {
     name: string;
-    owner: Schema.Types.ObjectId;
+    owner: Types.ObjectId;
 }
 
 const TutorialSchema = new Schema<Tutorial , Model<Tutorial , object>>(
