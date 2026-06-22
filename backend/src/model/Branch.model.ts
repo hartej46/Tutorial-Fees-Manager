@@ -1,12 +1,12 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Types, Model } from "mongoose";
 
 interface Branch {
     branchName: string;
-    tutorial: Schema.Types.ObjectId;
+    tutorial: Types.ObjectId;
     address: string;
 }
 
-const BranchSchema = new Schema<Branch>(
+const BranchSchema = new Schema<Branch, Model<Branch, object>>(
     {
         branchName: {
             type: String,
