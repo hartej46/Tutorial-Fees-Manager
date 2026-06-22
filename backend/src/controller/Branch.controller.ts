@@ -12,6 +12,7 @@ interface CustomRequest extends Request {
     };
 }
 
+//post method
 const createBranch = asyncHandler(async (req: CustomRequest, res: Response): Promise<Response> => {
     const { branchName, address, tutorialName } = req.body;
 
@@ -76,3 +77,26 @@ const createBranch = asyncHandler(async (req: CustomRequest, res: Response): Pro
         });
     }
 });
+
+//get Method
+const getBranchDetails = asyncHandler(async(req: CustomRequest, res: Response): Promise<any> => {
+    const { tutorialName } = req.body;
+    const trimmedTutorialName = tutorialName.trim();
+    const tutorial = await Tutorial.findOne({name : trimmedTutorialName});
+
+    if (!tutorial) {
+        return res.status(400).json({ success: false, message: "Tutorial is required." });
+    }
+    const branches = await Branch.find({tutorial: tutorial._id as Types.ObjectId});
+
+    return res.status(200).json({
+        success: true,
+        message: "Successfully fetched all the branches under this Tutorial",
+        data: branches
+    });
+})
+
+export {
+    createBranch,
+    getBranchDetails
+}
