@@ -5,7 +5,7 @@ interface Standard {
     year: string;
     branch: Types.ObjectId;
     totalFeeAmount: Number;
-    applicableMonths: String;
+    applicableMonths: String[];
 }
 
 const StandardSchema = new Schema<Standard>(
