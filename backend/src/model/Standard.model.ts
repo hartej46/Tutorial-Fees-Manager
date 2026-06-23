@@ -27,10 +27,11 @@ const StandardSchema = new Schema<Standard>(
             type: Number,
             required: true,
         },
-        applicableMonths: [{ 
-            type: String, 
-            enum: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        }]
+        applicableMonths: {
+        type: [String], 
+        enum: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        default: [] 
+    }
     }, 
     {
         timestamps: true
