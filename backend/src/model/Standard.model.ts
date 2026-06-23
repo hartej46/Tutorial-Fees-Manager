@@ -3,7 +3,7 @@ import mongoose, { Schema, Types } from "mongoose";
 interface Standard {
     grade: string;
     year: string;
-    branch: Schema.Types.ObjectId;
+    branch: Types.ObjectId;
     totalFeeAmount: Number;
     applicableMonths: String;
 }
