@@ -1,22 +1,22 @@
 import { Schema, model, Types } from 'mongoose';
 
-interface Montly {
+interface Monthly {
   monthName: string;
   status: 'pending' | 'paid' | 'partially paid';
   paymentDate: Date;
   amountPaid: number;
 }
 
-interface EnrollmentSchemaDocument extends Montly {
+interface EnrollmentSchemaDocument extends Monthly {
   student: Types.ObjectId;
   branch: Types.ObjectId;
   grade: Types.ObjectId;
   year: string;
   isActive: boolean;
-  montlyFeeStructure: Montly[];
+  monthlyFeeStructure: Monthly[];
 }
 
-const montlySchema = new Schema<Montly>({
+const monthlySchema = new Schema<Monthly>({
   monthName: { type: String, required: true },
   status: {
     type: String,
@@ -38,7 +38,7 @@ const EnrollmentSchema = new Schema<EnrollmentSchemaDocument>({
   grade: { type: Types.ObjectId, ref: 'Standard' },
   year: { type: String, required: true },
   isActive: { type: Boolean, default: false },
-  montlyFeeStructure: [montlySchema],
+  monthlyFeeStructure: [monthlySchema],
 });
 
 const Enrollment = model<EnrollmentSchemaDocument>('Enrollment', EnrollmentSchema);
