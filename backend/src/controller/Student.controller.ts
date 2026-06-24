@@ -87,3 +87,7 @@ const createStudent = asyncHandler(async (req: CustomRequest, res: Response)=> {
         });
     }   
 });
+
+export {
+    createStudent
+}

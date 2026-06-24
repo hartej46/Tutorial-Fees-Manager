@@ -120,3 +120,7 @@ const getAllClass = asyncHandler(async(req: CustomRequest, res: Response) => {
     })
 })
 
+export {
+    createNewClass,
+    getAllClass
+}
