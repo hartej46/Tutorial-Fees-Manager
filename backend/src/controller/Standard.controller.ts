@@ -14,7 +14,7 @@ interface CustomRequest extends Request {
     }
 }
 
-const createNewClass = asyncHandler(async (req: CustomRequest, res: Response) => {
+const createNewClass = asyncHandler(async (req: CustomRequest, res: Response) : Promise<Response> => {
     const { tutorialName, branchName, receivedStandard, applicableMonths, totalFeeAmount, year } = req.body;
     
     const trimmedTutorialName = typeof tutorialName === 'string' ? tutorialName.trim() : "";
@@ -86,4 +86,37 @@ const createNewClass = asyncHandler(async (req: CustomRequest, res: Response) =>
     }
 });
 
+const getAllClass = asyncHandler(async(req: CustomRequest, res: Response) => {
+    const {inputBranch, inputTutorial, inputYear, inputStandard} = req.body;
+    const [trimmedBranch, trimmedYear, trimmedStandard,trimmedTutorial] = [inputBranch, inputYear, inputStandard,inputTutorial].map((item) => 
+        typeof item === 'string' ? item.trim() : ""
+    );
+
+    const correctInput = [trimmedBranch, trimmedYear, trimmedStandard,trimmedTutorial].every(item => item !== "");
+
+    if (!correctInput) return res.status(409).json({
+        success: false,
+        message: "Please provide correct input"
+    });
+
+    const tutorial = await Tutorial.findOne({name: trimmedTutorial, owner: req.user?._id});
+    if (!tutorial) return res.status(409).json({
+        success: false,
+        message: "Tutorial not found"
+    });
+
+    const branch = await Branch.findOne({tutorial: tutorial._id, branchName: trimmedBranch});
+    if (!branch) return res.status(409).json({
+        success: false,
+        message: "Branch not found"
+    });
+
+    const standard = await Standard.findOne({branch: branch._id, grade: trimmedStandard, year: trimmedYear})
+
+    return res.status(200).json({
+        success: true,
+        message: "Found successfully",
+        data: standard
+    })
+})
 
