@@ -29,49 +29,27 @@ async function getNextSequenceValue(counterId: string): Promise<number> {
     return sequenceDocument.seq;
 }
 
-const createStudent = asyncHandler(async (req: CustomRequest, res: Response)=> {
-    const {inputBranchName, inputStudent, inputYear, inputTutorialName, inputStandard, inputParentsPhoneNumber} = req.body;
-    const [trimmedBranch, trimmedStudent, trimmedYear, trimmedTutorial, trimmedStandard, parentsPhoneNumberStr] = 
-        [inputBranchName, inputStudent, inputYear, inputTutorialName, inputStandard, inputParentsPhoneNumber].map((item) => 
-            typeof item === 'string' ? item.trim() : ""
-        );
+const createStudent = asyncHandler(async (req: CustomRequest, res: Response) => {
+    const { inputStudent, inputParentsPhoneNumber } = req.body;
+    
+    const trimmedStudent = typeof inputStudent === 'string' ? inputStudent.trim() : "";
+    const parentsPhoneNumberStr = typeof inputParentsPhoneNumber === 'string' ? inputParentsPhoneNumber.trim() : "";
 
     const parentsPhoneNumber = Number(parentsPhoneNumberStr);
     const isPhoneValid = !isNaN(parentsPhoneNumber) && parentsPhoneNumberStr.length === 10;
 
-    const correctInput = [trimmedBranch, trimmedStudent, trimmedYear, trimmedTutorial, trimmedStandard].every(item => item !== "") && isPhoneValid;
+    const correctInput = trimmedStudent !== "" && isPhoneValid;
 
-    if (!correctInput) return res.status(409).json({
-        success: false,
-        message: "Please provide correct input"
-    });
-
-    const tutorial = await Tutorial.findOne({name: trimmedTutorial, owner: req.user?._id});
-    if (!tutorial) return res.status(409).json({
-        success: false,
-        message: "Tutorial not found"
-    });
-
-    const branch = await Branch.findOne({tutorial: tutorial._id, branchName: trimmedBranch});
-    if (!branch) return res.status(409).json({
-        success: false,
-        message: "Branch not found"
-    });
-
-    const standard = await Standard.findOne({branch: branch._id, grade: trimmedStandard, year: trimmedYear});
-    if (!standard) return res.status(409).json({
-        success: false,
-        message: "Standard not found"
-    });
-
-    const counterId = `${branch.branchName}-${trimmedYear}`;
-    const seq = await getNextSequenceValue(counterId);
-    const studentId = `${counterId}-${seq}`
+    if (!correctInput) {
+        return res.status(409).json({
+            success: false,
+            message: "Please provide correct input"
+        });
+    }
 
     try {
         const newStudent = await Student.create({
             name: trimmedStudent,
-            id: studentId,
             parentsPhoneNumber: parentsPhoneNumber
         });
 
@@ -80,7 +58,7 @@ const createStudent = asyncHandler(async (req: CustomRequest, res: Response)=> {
             message: "Student added successfully",
             data: newStudent
         });
-    } catch (error : unknown) {
+    } catch (error: unknown) {
         return res.status(500).json({
             success: false,
             message: error instanceof Error ? error.message : "Internal Server Error during creation"
