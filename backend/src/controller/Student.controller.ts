@@ -1,6 +1,3 @@
-import {Branch} from '../model/Branch.model';
-import { Standard} from '../model/Standard.model';
-import { Tutorial } from '../model/Tutorial.model';
 import { asyncHandler } from '../utils/asyncHandler';
 import  {Types}  from 'mongoose';
 import {Request, Response} from 'express';
