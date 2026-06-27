@@ -1,9 +1,10 @@
-import mongoose, { Model, model, Schema } from "mongoose";
+import mongoose, { Model, model, Schema, Types } from "mongoose";
 
 interface Student {
     name: string;
     parentsPhoneNumber: Number;
-    id: string
+    id: string;
+    owner: Types.ObjectId;
 }
 
 const StudentSchema = new Schema<Student, Model<Student, object>>(
@@ -18,6 +19,11 @@ const StudentSchema = new Schema<Student, Model<Student, object>>(
         },
         id: {
             type: String,
+            required: true
+        },
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
             required: true
         }
     },
