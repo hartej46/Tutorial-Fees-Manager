@@ -81,7 +81,7 @@ const updateStudentDetails = asyncHandler(async (req: CustomRequest, res: Respon
         return res.status(400).json({
             success: false,
             message: "Please provide correct inputs"
-        })
+        });
     }
 
     try {
@@ -109,6 +109,28 @@ const updateStudentDetails = asyncHandler(async (req: CustomRequest, res: Respon
             message: error instanceof Error ? error.message : "Internal Server Error during creation"
         });
     };
+})
+
+const getStudentDetails =  asyncHandler(async (req: CustomRequest, res: Response) => {
+    const {inputStudentId} = req.body;
+    const studentId = typeof(inputStudentId) == "string" ? inputStudentId.trim() : "";
+    if (!studentId) {
+        return res.status(400).json({
+            success: false,
+            message: "Please provide correct inputs"
+        });
+    }
+
+    const student = await Student.findOne({
+        id: studentId,
+        owner: req.user?._id 
+    })
+
+    return res.status(200).json({
+        success: true,
+        message: "Student fetched successfully",
+        data: student
+    })
 })
 
 export {
