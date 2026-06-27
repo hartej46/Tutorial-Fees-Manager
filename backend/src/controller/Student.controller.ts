@@ -13,7 +13,7 @@ interface CustomRequest extends Request {
 import Counter from '../model/URN.model';
 import { Student } from '../model/Student.model';
 
-async function getNextSequenceValue(counterId: string): Promise<number> {
+async function getNextSequenceValue(counterId: Types.ObjectId): Promise<number> {
     const sequenceDocument = await Counter.findOneAndUpdate(
         { id: counterId },
         { $inc: { seq: 1 } },
@@ -44,10 +44,16 @@ const createStudent = asyncHandler(async (req: CustomRequest, res: Response) => 
         });
     }
 
+    const nextIdValue = await getNextSequenceValue(req.user?._id as Types.ObjectId); 
+    const customIdStr = `STU-${nextIdValue}`;
+
+
     try {
         const newStudent = await Student.create({
             name: trimmedStudent,
-            parentsPhoneNumber: parentsPhoneNumber
+            parentsPhoneNumber: parentsPhoneNumber,
+            id: customIdStr,
+            owner: req.user?._id
         });
 
         return res.status(200).json({
