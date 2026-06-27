@@ -69,6 +69,49 @@ const createStudent = asyncHandler(async (req: CustomRequest, res: Response) => 
     }   
 });
 
+const updateStudentDetails = asyncHandler(async (req: CustomRequest, res: Response) => {
+    const {inputStudentId, inputParentsPhoneNumber} = req.body;
+    const studentId = typeof(inputStudentId) == "string" ? inputStudentId.trim() : "";
+    const parentsPhoneNumberStr = typeof inputParentsPhoneNumber === 'string' ? inputParentsPhoneNumber.trim() : "";
+
+    const parentsPhoneNumber = Number(parentsPhoneNumberStr);
+    const isPhoneValid = !isNaN(parentsPhoneNumber) && parentsPhoneNumberStr.length === 10;
+
+    if (!studentId || !isPhoneValid) {
+        return res.status(400).json({
+            success: false,
+            message: "Please provide correct inputs"
+        })
+    }
+
+    try {
+        const student = await Student.findOneAndUpdate(
+            {
+                id: studentId,
+                owner: req.user?._id
+            },
+            {
+                $set: {
+                    parentsPhoneNumber: parentsPhoneNumber
+                }
+            },
+            { new: true}
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: "Phone number updated",
+            data: student
+        });
+    } catch (error : unknown) {
+        return res.status(500).json({
+            success: false,
+            message: error instanceof Error ? error.message : "Internal Server Error during creation"
+        });
+    };
+})
+
 export {
-    createStudent
+    createStudent,
+    updateStudentDetails
 }
