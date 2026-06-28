@@ -6,6 +6,7 @@ import { Tutorial } from '../model/Tutorial.model';
 import { asyncHandler } from '../utils/asyncHandler.ts';
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
+import { isAction } from '@reduxjs/toolkit';
 
 interface CustomRequest extends Request {
     user? : {
@@ -233,3 +234,64 @@ const updateStudentMonthlyFees = asyncHandler(async (req: CustomRequest, res: Re
         data: updatedEnrollment
     });
 });
+
+const changeActive = asyncHandler( async (req: CustomRequest, res: Response) => {
+    const {
+        inputBranchName,
+        inputTutorialName,
+        inputStudentId,
+        inputStandard,
+        inputYear,
+        inputMonthName,
+        inputStatus,
+        inputAmountPaid,
+    } = req.body;
+
+    const [branchName, tutorialName, studentId, standard, year, monthName, status, amountPaidStr] = [
+        inputBranchName,
+        inputTutorialName,
+        inputStudentId,
+        inputStandard,
+        inputYear,
+        inputStatus,
+    ].map(item => (typeof item == 'string' ? item.trim() : ""));
+
+    const correctInput = [branchName, tutorialName, studentId, standard, year, status].every(item => item !== "");
+
+    if (!correctInput) {
+        return res.status(400).json({
+            success: false,
+            message: 'Provide correct input'
+        });
+    }
+
+    const validation = await validateEnrollmentEntities({
+        tutorialName,
+        branchName,
+        standard,
+        year,
+        studentId,
+        userId: req.user?._id
+    });
+
+    if (!validation.isValid || !validation.data) {
+        return res.status(validation.status || 400).json({
+            success: false,
+            message: validation.message
+        });
+    }
+
+    const { studentDbId, branchDbId, standardDbId } = validation.data;
+
+    const updatedEnrollment = await Enrollment.findOneAndUpdate({
+        student:  studentDbId,
+        branch: branchDbId,
+        grade: standardDbId,
+        year: year,
+        isActive: Boolean(status)
+    },{
+        $set: {
+            isActive: false
+        }
+    },{new: true})
+})
